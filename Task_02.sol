@@ -10,9 +10,6 @@ contract Task_02 {
     }
 
     // Решение задания
-    function suFmArray() public view returns (uint sum) {
-        for (uint i = 0; i < dynamicArray.length; i++) {
-            sum += dynamicArray[i];
         }
         return sum;
     }
