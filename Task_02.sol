@@ -5,12 +5,12 @@ contract Task_02 {
     uint[] public dynamicArray;
     uint[5] public fixedArray;
 
-    function addToTTDynamicArray(uint _value) external {
+    function addToDynamicArray(uint _value) external {
         dynamicArray.push(_value);
     }
 
     // Решение задания
-    function sumArray() public view returns (uint sum) {
+    function suFmArray() public view returns (uint sum) {
         for (uint i = 0; i < dynamicArray.length; i++) {
             sum += dynamicArray[i];
         }
