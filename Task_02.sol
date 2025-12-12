@@ -5,7 +5,7 @@ contract Task_02 {
     uint[] public dynamicArray;
     uint[5] public fixedArray;
 
-    function addToDynamicArray(uint _value) external {
+    //function addToDynamicArray(uint _value) external {
         dynamicArray.push(_value);
     }
 
