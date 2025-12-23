@@ -5,7 +5,6 @@ contract Task_11 {
     address public owner;
     uint public targetAmount;
     uint public totalUserDeposits;
-    
     enum State { Active, Paused, Closed }
     State public state;
 
@@ -42,13 +41,10 @@ contract Task_11 {
         state = State.Active;
     }
 
-    // Решение:
     function deposit() external payable whenActive {
-        require(msg.value > 0, "Deposit must be positive");
-        
+        require(msg.value > 0, "Deposit should be > 0");
         balances[msg.sender] += msg.value;
         totalUserDeposits += msg.value;
-        
         emit Deposited(msg.sender, msg.value);
 
         if (totalUserDeposits >= targetAmount) {
@@ -69,27 +65,28 @@ contract Task_11 {
         emit StateChanged(state);
     }
 
-    // Решение:
     function withdraw() external whenActiveOrPaused {
-        require(state == State.Paused, "Withdraw only when paused");
-        
-        uint amount = balances[msg.sender];
-        require(amount > 0, "No balance");
+        require(state == State.Paused, "Fund withdraw available only if paused");
+        uint userBalance = balances[msg.sender];
+        require(userBalance > 0, "No fund to withdraw");
 
         balances[msg.sender] = 0;
-        totalUserDeposits -= amount;
-        
-        payable(msg.sender).transfer(amount);
-        
-        emit Withdrawn(msg.sender, amount);
+        totalUserDeposits -= userBalance;
+
+        (bool sent,) = msg.sender.call{value: userBalance}("");
+        require(sent, "Failed to send Ether");
+
+        emit Withdrawn(msg.sender, userBalance);
     }
 
-    // Решение:
     function ownerWithdrawAll() external onlyOwner whenClosed {
-        uint amount = address(this).balance;
-        require(amount > 0, "No funds");
-        
-        payable(owner).transfer(amount);
+        uint contractBalance = address(this).balance;
+        require(contractBalance > 0, "No fund to withdraw");
+
+        (bool sent,) = owner.call{value: contractBalance}("");
+        require(sent, "Failed to send Ether");
+
+        totalUserDeposits = 0;
     }
 
     function getState() external view returns (string memory) {
