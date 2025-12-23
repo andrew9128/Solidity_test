@@ -1,21 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Task_13 {
-   // Исправлено: != 0
+
+contract ExampleUsage {
+   // Пример использования assert
    function assertExample(uint256 _value) public pure {
-       assert(_value != 0); 
+       // Исправление: проверяем, что _value не равен нулю
+       assert(_value != 0);
    }
 
-   // Исправлено: !condition
+
+   // Пример использования revert
    function revertExample(bool _condition) public pure {
+       // Исправление: добавляем revert с сообщением "Invalid condition" если _condition == false
        if (!_condition) {
-           revert("Condition failed!"); 
+           revert("Invalid condition");
        }
    }
 
-   // Исправлено: добавлен else
+
+   // Пример использования if-else
    function ifElseExample(uint256 _value) public pure returns (string memory) {
+       // Исправление: добавляем ветку else
        if (_value > 10) {
            return "Value is greater than 10";
        } else {
@@ -23,8 +29,10 @@ contract Task_13 {
        }
    }
 
-   // Исправлено: == вместо =
+
+   // Пример использования else if
    function elseIfExample(uint256 _value) public pure returns (string memory) {
+       // Исправление: заменяем = на ==
        if (_value > 10) {
            return "Value is greater than 10";
        } else if (_value == 10) {
@@ -34,9 +42,10 @@ contract Task_13 {
        }
    }
 
-   // Исправлено: логика тернарника
+
+   // Пример использования тернарного оператора
    function ternaryExample(uint256 _value) public pure returns (string memory) {
-       // if-else эквивалент тернарного
+       // Исправление: переписываем с использованием if-else
        if (_value > 10) {
            return "Value is greater than 10";
        } else {
