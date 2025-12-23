@@ -1,15 +1,22 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
 contract Task_04 {
-    mapping(address => uint256) public balances;
-
-    function setBalance(address _addr, uint256 _balance) external {
-        balances[_addr] = _balance;
-    }
-
-    // Решение задания
-    function getBalance(address _addr) external view returns (uint256) {
-        return balances[_addr];
+    function generateFibo(uint256 n) public pure returns (uint256) {
+        if (n == 0) {
+            return 1;
+        }
+        
+        uint256 a = 0;
+        uint256 b = 1;
+        uint256 fib;
+        
+        do {
+            fib = a + b;
+            a = b;
+            b = fib;
+        } while (fib <= n);
+        
+        return fib;
     }
 }

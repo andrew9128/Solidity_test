@@ -1,24 +1,22 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
 contract Task_09 {
-    address public owner;
-    constructor() { owner = msg.sender; }
+    event UserAdded(uint256 indexed userId, string message);
+    event UserRemoved(uint256 indexed userId, string message);
 
-    function getFixedByteArraySum(bytes1[4] memory _data) public pure returns (uint8) {
-        uint8 sum = 0;
-        for (uint8 i = 0; i < _data.length; i++) {
-            sum += uint8(_data[i]);
-        }
-        return sum;
+    mapping(uint256 => string) public users;
+    uint256 public userCount;
+
+    function addUser(string memory name) external {
+        userCount++;
+        users[userCount] = name;
+        emit UserAdded(userCount, "User added successfully.");
     }
 
-    // Решение задания
-    function getFixedByteArrayAverage(bytes1[4] memory _data) public pure returns (uint8) {
-        uint16 sum = 0; // uint16 во избежание переполнения при сложении
-        for (uint8 i = 0; i < _data.length; i++) {
-            sum += uint8(_data[i]);
-        }
-        return uint8(sum / _data.length);
+    function removeUser(uint256 userId) external {
+        require(bytes(users[userId]).length != 0, "User does not exist.");
+        delete users[userId];
+        emit UserRemoved(userId, "User removed successfully.");
     }
 }

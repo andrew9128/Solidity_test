@@ -2,25 +2,24 @@
 pragma solidity ^0.8.0;
 
 contract Task_05 {
-    enum Status {
-        Pending,
-        Active,
-        Inactive
+    uint256[] public celsiusTemperatures; // storage
+
+    // Функция для добавления температуры в градусах Цельсия
+    function addCelsiusTemperature(uint256 temperature) public {
+        celsiusTemperatures.push(temperature); // добавляем значение в массив
     }
 
-    Status public currentStatus;
-
-    function setStatus(Status _status) external {
-        currentStatus = _status;
+    // Функция для конвертации градусов Цельсия в Фаренгейт
+    function convertToFahrenheit(uint256 temperature) public pure returns (uint256) {
+        return (temperature * 9 / 5) + 32; // конвертация
     }
 
-    // Решение задания (в задании была опечатка getBalance, здесь логичное имя)
-    function getStatus() external view returns (Status) {
-        return currentStatus;
-    }
-    
-    // Дубликат для совместимости с текстом задания, если требуется
-    function getBalance() external view returns (uint) {
-        return uint(currentStatus);
+    // Функция для получения всех температур в Фаренгейтах
+    function getAllFahrenheitTemperatures() public view returns (uint256[] memory) {
+        uint256[] memory fahrenheitTemperatures = new uint256[](celsiusTemperatures.length);
+        for (uint256 i = 0; i < celsiusTemperatures.length; i++) {
+            fahrenheitTemperatures[i] = convertToFahrenheit(celsiusTemperatures[i]);
+        }
+        return fahrenheitTemperatures; // возвращаем массив конвертированных температур
     }
 }

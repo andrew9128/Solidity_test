@@ -1,19 +1,13 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
 contract Task_02 {
-    uint[] public dynamicArray;
-    uint[5] public fixedArray;
-
-    function addToDynamicArray(uint _value) external {
-        dynamicArray.push(_value);
-    }
-
-    // Решение задания
-    function sumArray() public view returns (uint sum) {
-        for (uint i = 0; i < dynamicArray.length; i++) {
-            sum += dynamicArray[i];
+    // Функция для генерации массива квадратов чисел от 1 до n
+    function generateSquares(uint256 n) public pure returns (uint256[] memory) {
+        uint256[] memory squares = new uint256[](n); // создаем массив для хранения квадратов
+        for (uint256 i = 1; i <= n; i++) {
+            squares[i - 1] = i * i; // вычисляем квадрат и сохраняем в массив
         }
-        return sum;
+        return squares; // возвращаем массив квадратов
     }
 }
