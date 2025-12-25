@@ -1,40 +1,37 @@
-sequenceDiagram
-    autonumber
-    actor User as 👤 User (@director)
-    participant API as ⚙️ Orchestrator API
-    participant SynapseDB as 🐘 PostgreSQL (Synapse)
-    participant GraphAPI as 🕸️ GraphRAG (Federated)
-    participant FalkorDB as 🗄️ FalkorDB (Shards)
-    participant vLLM as 🧠 vLLM Gateway
-
-    Note over User, API: Сценарий: Чтение ("Вспомнить")
-
-    User->>API: POST /orchestrate/query<br/>"Any updates on budget?"
-    
-    rect rgb(240, 248, 255)
-    note right of API: 1. Определение прав доступа
-    API->>SynapseDB: SELECT rooms FROM memberships WHERE user='@director'
-    SynapseDB-->>API: Returns: ['!project_x', '!lounge']
-    API->>API: Map rooms to Graph Names:<br/>['channel_project_x', 'channel_lounge']
+graph TD
+    subgraph "External Systems"
+        Client[📱 Client / Chatbot]
+        SynapseDB[(🐘 Synapse DB<br>PostgreSQL)]
+        vLLM[🧠 vLLM Gateway<br>SAIGA / DeepSeek]
     end
 
-    rect rgb(255, 240, 245)
-    note right of API: 2. Федеративный поиск
-    API->>GraphAPI: Parallel Search in multiple graphs
-    par Search in Project X
-        GraphAPI->>FalkorDB: QUERY graph='channel_project_x'
-        FalkorDB-->>GraphAPI: Found: "Budget cut by 20%"
-    and Search in Lounge
-        GraphAPI->>FalkorDB: QUERY graph='channel_lounge'
-        FalkorDB-->>GraphAPI: Found: "Party at Italian restaurant"
-    end
-    GraphAPI-->>API: Aggregated Context list
+    subgraph "GraphRAG System"
+        Orchestrator[🎮 Orchestrator API<br>FastAPI]
+        Worker[👷 Async Worker]
+        Redis[(📮 Redis<br>Queue)]
+        
+        subgraph "Knowledge Storage"
+            FalkorDB[(🗄️ FalkorDB<br>RedisGraph)]
+        end
     end
 
-    rect rgb(240, 255, 240)
-    note right of API: 3. Синтез ответа
-    API->>vLLM: Prompt: "Synthesize answer based on context..."
-    vLLM-->>API: "Budget is cut, party is on Friday."
-    end
+    %% Read Flow
+    Client -- "1. Query" --> Orchestrator
+    Orchestrator -- "2. Check Perms" --> SynapseDB
+    Orchestrator -- "3. Federated Search" --> FalkorDB
+    Orchestrator -- "4. Synthesize" --> vLLM
 
-    API->>User: JSON Response (Final Answer)
+    %% Write Flow
+    Client -- "5. New Message" --> Orchestrator
+    Orchestrator -- "6. Enqueue Task" --> Redis
+    Redis -- "7. Pick Task" --> Worker
+    Worker -- "8. Extract Graph" --> vLLM
+    Worker -- "9. Write Graph" --> FalkorDB
+
+    classDef component fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef external fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+
+    class Orchestrator,Worker component;
+    class FalkorDB,Redis storage;
+    class Client,SynapseDB,vLLM external;
